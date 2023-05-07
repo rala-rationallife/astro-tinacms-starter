@@ -1,0 +1,26 @@
+/* カスケードレイヤー */
+@layer default, layout, theme;
+
+/* 上書き用のスタイル: 上下のスペースを大きくする */
+body .large-space {
+  margin-block: 2.5em;
+}
+
+body {
+  .markdown-body {
+    > h2 {
+      padding: 0;
+      margin-block: 3rem 1rem;
+      border: none;
+      line-height: 1;
+    }
+
+    > p {
+      line-height: 1.8;
+    }
+
+    > pre {
+      font-size: 16px;
+    }
+  }
+}

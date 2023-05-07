@@ -1,0 +1,18 @@
+---
+import CustomPicture from "@components/custom-picture.astro";
+
+interface Props {
+  url: string;
+  src: string;
+  title: string;
+}
+
+const { url, src, title } = Astro.props;
+---
+
+<article class="card">
+  <a rel="prefetch" href={`/blog/${url}`}>
+    <CustomPicture src={src} alt={title} />
+    <h2>{title}</h2>
+  </a>
+</article>

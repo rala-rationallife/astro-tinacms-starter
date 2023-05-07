@@ -1,0 +1,63 @@
+---
+import Card from "@components/card.astro";
+import Layout from "@layouts/layout.astro";
+import Pagination from "@components/pagination.astro";
+import { categories } from "@lib/constants";
+import { CollectionEntry, getCollection } from "astro:content";
+import { compareDesc } from "date-fns";
+import type { GetStaticPathsOptions, Page } from "astro";
+
+interface Post {
+  slug: string;
+  data: {
+    image: string;
+    title: string;
+  };
+}
+
+interface Props {
+  page: Page<CollectionEntry<"blog">>;
+  categoryName: string;
+}
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const blogPosts = await getCollection("blog");
+  const sortedBlogPosts = blogPosts.sort((a, b) =>
+    compareDesc(a.data.pubDate, b.data.pubDate)
+  );
+  return categories.map((category) => {
+    const { categorySlug, categoryName } = category;
+
+    const filteredPosts = sortedBlogPosts.filter((post) => {
+      return post.data.category.includes(categorySlug);
+    });
+
+    return paginate(filteredPosts, {
+      params: { categorySlug },
+      props: { categoryName },
+      pageSize: 6,
+    });
+  });
+}
+
+const { page, categoryName } = Astro.props;
+---
+
+<Layout pageTitle={categoryName} description={`${categoryName}の記事一覧`}>
+  <h1>{categoryName}</h1>
+
+  <div class="grid">
+    {
+      page.data.map((post: Post) => {
+        const {
+          slug,
+          data: { image, title },
+        } = post;
+
+        return <Card url={slug} src={image} title={title} />;
+      })
+    }
+  </div>
+
+  <Pagination prev={page.url.prev} next={page.url.next} />
+</Layout>
